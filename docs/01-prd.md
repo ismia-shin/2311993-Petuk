@@ -23,11 +23,18 @@
 | **MVP** | Mid-term | Restaurants and reviews, stored in a database, live online |
 | **Beta** | Final | Accounts, roles, menus and basic security |
 
-## 1. Problem statement
+## 1. Purpose
+
+Petuk is a community-driven restaurant discovery and review platform designed to help food lovers in Bangladesh find authentic places to eat without relying on biased social media posts. The project is delivered in two clear, iterative steps:
+
+1. **MVP (mid-term):** a core, functional **REST API for creating, reading, updating, and deleting restaurants and multidimensional reviews (CRUD)**, deployed live on Vercel with a managed PostgreSQL database.
+2. **Beta (final):** turn the MVP into a full multi-user platform: accounts and authentication (JWT), role-based access control (`customer` and `admin`), restaurant menu management with pricing, review ownership enforcement, and security hardening (Argon2 hashing, brute-force lockout).
+
+## 2. Problem statement
 
 Food lovers in Bangladesh find restaurant reviews scattered across social media, and many of them are sponsored, so it is hard to trust them. Local restaurants also lack a simple place to show accurate information. Petuk is a community-driven restaurant discovery and review platform that helps diners find authentic places to eat across Bangladesh.
 
-## 2. Goals
+## 3. Goals
 
 | ID | Goal | Release |
 |---|---|---|
@@ -39,7 +46,7 @@ Food lovers in Bangladesh find restaurant reviews scattered across social media,
 | G-6 | Show each restaurant's menu and prices. | Beta |
 | G-7 | Keep accounts safe (hashed passwords, login limit). | Beta |
 
-## 3. Target users
+## 4. Target users
 
 | User | Need | Release |
 |---|---|---|
@@ -50,7 +57,7 @@ Food lovers in Bangladesh find restaurant reviews scattered across social media,
 
 In the **MVP** there are no accounts: everyone shares the same data. In the **Beta** every review belongs to a customer.
 
-## 4. Scope
+## 5. Scope
 
 ### In scope — MVP
 - Add, view, list, edit and delete restaurants
@@ -72,7 +79,7 @@ In the **MVP** there are no accounts: everyone shares the same data. In the **Be
 - Email verification, password reset, social login
 - Automated tests and CI/CD
 
-## 5. Features and priority (MoSCoW)
+## 6. Features and priority (MoSCoW)
 
 | ID | Feature | Release | Priority |
 |---|---|---|---|
@@ -91,7 +98,7 @@ In the **MVP** there are no accounts: everyone shares the same data. In the **Be
 | F-13 | Restaurant owner role to manage own menu | Beta | Could |
 | F-14 | React pages for login, restaurants and reviews | Beta | Could |
 
-## 6. User stories
+## 7. User stories
 
 ### MVP
 
@@ -111,7 +118,7 @@ In the **MVP** there are no accounts: everyone shares the same data. In the **Be
 | US-07 | As an admin, I want to manage restaurants and delete bad reviews, so the platform stays trustworthy. | F-9 |
 | US-08 | As a diner, I want to see a restaurant's menu and prices, so I know what it costs. | F-10 |
 
-## 7. Success metrics
+## 8. Success metrics
 
 - Restaurants and reviews can be added, viewed, edited and deleted on the live Vercel URL, and the data is still there after a redeploy.
 - `/api/docs` lists every endpoint.
@@ -119,7 +126,7 @@ In the **MVP** there are no accounts: everyone shares the same data. In the **Be
 - Only an admin can add, change or delete restaurants and menus.
 - Passwords are never stored or shown in plain text.
 
-## 8. Assumptions and constraints
+## 9. Assumptions and constraints
 
 - This is a one-person project, so "Could" items are only built if time remains.
 - Hosted on Vercel, with data in an external database (Supabase PostgreSQL).
@@ -127,6 +134,33 @@ In the **MVP** there are no accounts: everyone shares the same data. In the **Be
 - The first admin is set manually in the database.
 - MVP data is demo data and does not need to be kept when the Beta adds accounts.
 
+## 10. Milestones
+
+### MVP — Mid-term
+
+| Milestone | Deliverable |
+|---|---|
+| M1 — Docs | [PRD](01-prd.md), [SRS](02-srs.md) and [TDD](03-tdd.md) (covering MVP and Beta specifications) approved |
+| M2 — Data layer | Restaurant and Review models configured in SQLModel, Supabase PostgreSQL database connected via connection pooler |
+| M3 — API | CRUD endpoints for restaurants and reviews with 5-category rating calculations (`taste`, `atmosphere`, `cleanliness`, `price`, `service`), validation rules, and `/api/docs` |
+| M4 — Mid demo | Live deployment on Vercel with persistent database, tagged `v0.1.0` (MVP) |
+
+### Beta — Final
+
+| Milestone | Deliverable |
+|---|---|
+| B1 — Auth & Migrations | Alembic database migrations configured; guest sign-up, login (JWT access tokens + HttpOnly refresh cookies), logout, and `/api/v1/users/me` profile management |
+| B2 — Ownership & Menus | User-owned reviews (one review per restaurant enforcement); Restaurant menu items with BDT pricing CRUD |
+| B3 — RBAC & Moderation | `customer` and `admin` roles; server-side permission checks; admin control over restaurants, menus, and moderation deletion of any review |
+| B4 — Security | Argon2id password hashing, 15-minute brute-force lockout after 5 consecutive failed logins, and environment secret audit |
+| B5 — Final demo | Full platform with React frontend and hardened FastAPI backend live on Vercel, tagged `v0.2.0` (Beta) |
+
+## 11. Release dependencies
+
+- The Beta builds directly on top of the MVP: the `/api/v1/restaurants` and `/api/v1/restaurants/{id}/reviews` endpoints are retained, but in Beta, creating, updating, and deleting operations require authentication.
+- Database migrations using Alembic are introduced at the start of Beta (Milestone B1) to evolve the schema from the two MVP tables (`restaurants`, `reviews`) to include accounts (`users`) and dishes (`menu_items`) with foreign key constraints.
+- Review ownership in Beta requires establishing user identity first; MVP review data is treated as transient demo data and replaced or linked to registered seed accounts during the Beta migration.
+- Menu management depends on the restaurant resource existing first, ensuring cascade deletion (FR-05) removes related menu items along with reviews when a restaurant is deleted.
 
 
 
