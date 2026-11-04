@@ -14,3 +14,4 @@ frontend/dist/
 !.vscode/extensions.json
 
 .DS_Store
+petuk.db
