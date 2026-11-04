@@ -1,0 +1,117 @@
+.app-container {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+.navbar {
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	background: var(--surface);
+	border-bottom: 1px solid var(--border);
+}
+
+.navbar-content {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	max-width: 960px;
+	margin: 0 auto;
+	padding: 14px 24px;
+}
+
+.brand {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	cursor: pointer;
+}
+
+.brand-icon {
+	font-size: 1.5rem;
+}
+
+.brand-title {
+	font-size: 1.3rem;
+	font-weight: 800;
+	color: var(--primary);
+}
+
+.nav-links {
+	display: flex;
+	gap: 8px;
+}
+
+.nav-btn {
+	padding: 8px 16px;
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: var(--muted);
+	background: none;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.nav-btn:hover {
+	color: var(--ink);
+	background: #f3e9db;
+}
+
+.nav-btn.active {
+	color: #ffffff;
+	background: var(--primary);
+}
+
+.main-content {
+	flex: 1;
+	width: 100%;
+	max-width: 960px;
+	margin: 0 auto;
+	padding: 32px 24px;
+	box-sizing: border-box;
+}
+
+.about-card {
+	padding: 28px;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 14px;
+}
+
+.about-card h2 {
+	margin-top: 0;
+}
+
+.about-card p {
+	line-height: 1.6;
+	color: var(--muted);
+}
+
+.tech-pills {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 20px;
+}
+
+.tech-pills span {
+	padding: 6px 12px;
+	font-size: 0.85rem;
+	color: var(--primary-dark);
+	background: #fde8e0;
+	border-radius: 999px;
+}
+
+.footer {
+	padding: 20px;
+	text-align: center;
+	font-size: 0.85rem;
+	color: var(--muted);
+	border-top: 1px solid var(--border);
+}
+
+.footer p {
+	margin: 0;
+}
