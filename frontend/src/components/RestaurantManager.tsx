@@ -7,7 +7,7 @@ import {
 	getRestaurants,
 	updateRestaurant,
 } from "../services/restaurantApi";
-import type { Restaurant } from "../services/restaurantApi";
+import type { Restaurant } from "../types/restaurant";
 import "./RestaurantManager.css";
 
 const emptyForm = { name: "", cuisine: "", rating: "" };
