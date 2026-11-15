@@ -1,9 +1,14 @@
 from pathlib import Path
 
 from fastapi import FastAPI
-from app.restaurants import init_db, router as restaurants_router
+from app.database import init_db
+from app.restaurants.router import router as restaurants_router
 
-app = FastAPI(title="FastAPI + React")
+app = FastAPI(
+    title="FastAPI + React",
+    docs_url="/api/docs",
+    openapi_url="/api/openapi.json"
+)
 
 init_db()
 
