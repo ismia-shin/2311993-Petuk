@@ -2,7 +2,7 @@
 
 A community-driven restaurant discovery and review platform for Bangladesh: browse restaurants, view menus, and rate eateries on taste, atmosphere, cleanliness, price, and service. Built as a REST API with FastAPI and a React frontend, deployed on Vercel.
 
-> **Status:** MVP in progress. Restaurant and review CRUD endpoints (`/api/v1/restaurants`, `/api/v1/restaurants/{id}/reviews`) and basic React views work locally with SQLite; user accounts, authentication, admin roles, and menus are planned for the Beta.
+> **Status:** Beta in progress. Restaurant CRUD endpoints and basic React views works successfully; user accounts, authentication, admin roles, and menus are planned for the Beta.
 
 ## Features
 
@@ -48,6 +48,19 @@ docs/       PRD, SRS, TDD (requirements, specification, technical design)
 vercel.json Vercel setup: /api/* goes to backend, everything else to frontend
 AGENTS.md   Branch, commit and PR conventions
 ```
+
+## Database migrations
+
+The database schema is managed with Alembic. Run these commands from the backend folder with the virtual environment active.
+
+```bash
+alembic upgrade head # apply all migrations
+alembic current # show the current version
+alembic downgrade -1 # undo the last migration
+alembic revision -m "message" --rev-id 0003 # create a new migration
+```
+
+Locally the database is backend/petuk.db (SQLite). In production set DATABASE_URL to the Supabase transaction pooler connection string.
 
 ## How it works
 
