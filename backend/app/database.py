@@ -1,7 +1,7 @@
 """Database engine and session handling."""
 
 from sqlalchemy.pool import NullPool
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session, create_engine
 
 from app.config import settings
 
@@ -26,12 +26,6 @@ else:
         poolclass=NullPool,
         connect_args={"prepare_threshold": None},
     )
-
-
-def init_db() -> None:
-    """Create missing tables. Step 2 replaces this with Alembic migrations."""
-    SQLModel.metadata.create_all(engine)
-
 
 def get_session():
     """FastAPI dependency: one database session per request."""

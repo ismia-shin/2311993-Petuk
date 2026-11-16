@@ -1,7 +1,5 @@
 from pathlib import Path
-
 from fastapi import FastAPI
-from app.database import init_db
 from app.restaurants.router import router as restaurants_router
 
 app = FastAPI(
@@ -9,8 +7,6 @@ app = FastAPI(
     docs_url="/api/docs",
     openapi_url="/api/openapi.json"
 )
-
-init_db()
 
 app.include_router(restaurants_router, prefix="/api/v1")
 
