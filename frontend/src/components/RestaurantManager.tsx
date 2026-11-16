@@ -10,7 +10,13 @@ import {
 import type { Restaurant } from "../types/restaurant";
 import "./RestaurantManager.css";
 
-const emptyForm = { name: "", cuisine: "", rating: "" };
+const emptyForm = {
+	name: "",
+	area: "",
+	cuisine: "",
+	address: "",
+	description: "",
+};
 
 export default function RestaurantManager() {
 	const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
@@ -35,6 +41,7 @@ export default function RestaurantManager() {
 		}
 	}
 
+	// Runs once when the page opens
 	useEffect(() => {
 		loadRestaurants();
 	}, []);
@@ -44,8 +51,10 @@ export default function RestaurantManager() {
 		event.preventDefault();
 		const data = {
 			name: form.name.trim(),
+			area: form.area.trim(),
 			cuisine: form.cuisine.trim(),
-			rating: Number(form.rating),
+			address: form.address.trim() || null,
+			description: form.description.trim() || null,
 		};
 		try {
 			setError("");
@@ -66,8 +75,10 @@ export default function RestaurantManager() {
 		setEditingId(restaurant.id);
 		setForm({
 			name: restaurant.name,
+			area: restaurant.area,
 			cuisine: restaurant.cuisine,
-			rating: String(restaurant.rating),
+			address: restaurant.address ?? "",
+			description: restaurant.description ?? "",
 		});
 		window.scrollTo({ top: 0, behavior: "smooth" });
 	}
@@ -118,7 +129,18 @@ export default function RestaurantManager() {
 						<input
 							placeholder="e.g. Kacchi Bhai"
 							value={form.name}
+							maxLength={100}
 							onChange={(e) => setForm({ ...form, name: e.target.value })}
+							required
+						/>
+					</label>
+					<label className="rm-field">
+						<span>Area</span>
+						<input
+							placeholder="e.g. Mirpur"
+							value={form.area}
+							maxLength={100}
+							onChange={(e) => setForm({ ...form, area: e.target.value })}
 							required
 						/>
 					</label>
@@ -127,21 +149,30 @@ export default function RestaurantManager() {
 						<input
 							placeholder="e.g. Bangladeshi"
 							value={form.cuisine}
+							maxLength={50}
 							onChange={(e) => setForm({ ...form, cuisine: e.target.value })}
 							required
 						/>
 					</label>
 					<label className="rm-field">
-						<span>Rating (0 - 5)</span>
+						<span>Address (optional)</span>
 						<input
-							type="number"
-							placeholder="4.5"
-							min="0"
-							max="5"
-							step="0.1"
-							value={form.rating}
-							onChange={(e) => setForm({ ...form, rating: e.target.value })}
-							required
+							placeholder="e.g. Road 3, Mirpur 10"
+							value={form.address}
+							maxLength={255}
+							onChange={(e) => setForm({ ...form, address: e.target.value })}
+						/>
+					</label>
+					<label className="rm-field rm-field-wide">
+						<span>Description (optional)</span>
+						<textarea
+							placeholder="What makes this place special?"
+							rows={3}
+							value={form.description}
+							maxLength={500}
+							onChange={(e) =>
+								setForm({ ...form, description: e.target.value })
+							}
 						/>
 					</label>
 				</div>
@@ -178,11 +209,21 @@ export default function RestaurantManager() {
 						<strong>ID:</strong> #{selected.id}
 					</p>
 					<p>
-						<strong>Cuisine:</strong> {selected.cuisine}
+						<strong>Area:</strong> {selected.area}
 					</p>
 					<p>
-						<strong>Rating:</strong> {selected.rating} / 5
+						<strong>Cuisine:</strong> {selected.cuisine}
 					</p>
+					{selected.address && (
+						<p>
+							<strong>Address:</strong> {selected.address}
+						</p>
+					)}
+					{selected.description && (
+						<p>
+							<strong>About:</strong> {selected.description}
+						</p>
+					)}
 				</div>
 			)}
 
@@ -197,9 +238,10 @@ export default function RestaurantManager() {
 						<article key={r.id} className="rm-card rm-item">
 							<div className="rm-item-top">
 								<h3>{r.name}</h3>
-								<span className="rm-rating">&#9733; {r.rating}</span>
+								<span className="rm-area">&#128205; {r.area}</span>
 							</div>
 							<span className="rm-cuisine">{r.cuisine}</span>
+							{r.description && <p className="rm-desc">{r.description}</p>}
 							<div className="rm-row rm-item-actions">
 								<button
 									type="button"
