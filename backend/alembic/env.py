@@ -6,6 +6,8 @@ from alembic import context
 from sqlmodel import SQLModel
 from app.database import engine
 import app.restaurants.models 
+import app.users.models
+import app.auth.models
 
 config = context.config
 
@@ -36,7 +38,6 @@ def run_migrations_online() -> None:
         )
         with context.begin_transaction():
             context.run_migrations()
-
 
 if context.is_offline_mode():
     run_migrations_offline()
