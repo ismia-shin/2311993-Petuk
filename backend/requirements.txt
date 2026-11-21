@@ -2,3 +2,6 @@ fastapi[standard]>=0.141.1
 sqlmodel
 psycopg[binary]
 alembic
+argon2-cffi
+pyjwt
+email-validator
