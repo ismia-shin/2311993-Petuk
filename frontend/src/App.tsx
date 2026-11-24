@@ -1,66 +1,41 @@
-import { useState } from "react";
-import RestaurantManager from "./components/RestaurantManager";
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
+import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
+import RestaurantManager from "./components/RestaurantManager";
+import AboutPage from "./pages/AboutPage";
+import LoginPage from "./pages/LoginPage";
+import ProfilePage from "./pages/ProfilePage";
+import SignupPage from "./pages/SignupPage";
 
 export default function App() {
-	const [activeTab, setActiveTab] = useState<"home" | "about">("home");
-
 	return (
 		<div className="app-container">
-			<header className="navbar">
-				<div className="navbar-content">
-					<div className="brand" onClick={() => setActiveTab("home")}>
-						<span className="brand-icon">🍽️</span>
-						<span className="brand-title">Petuk</span>
-					</div>
-					<nav className="nav-links">
-						<button
-							type="button"
-							className={`nav-btn ${activeTab === "home" ? "active" : ""}`}
-							onClick={() => setActiveTab("home")}
-						>
-							Explore
-						</button>
-						<button
-							type="button"
-							className={`nav-btn ${activeTab === "about" ? "active" : ""}`}
-							onClick={() => setActiveTab("about")}
-						>
-							About
-						</button>
-					</nav>
-				</div>
-			</header>
+			<Navbar />
 
 			<main className="main-content">
-				{activeTab === "home" ? (
-					<RestaurantManager />
-				) : (
-					<section className="about-card">
-						<h2>About Petuk</h2>
-						<p>
-							<strong>Petuk</strong> (পেটুক) is a simple platform for keeping a
-							catalog of restaurants you love, with the ability to add, view,
-							edit and delete each one.
-						</p>
-						<p>
-							It is built with a <strong>FastAPI</strong> backend and a{" "}
-							<strong>React + TypeScript</strong> frontend, and stores its data
-							in a database.
-						</p>
-						<div className="tech-pills">
-							<span>React</span>
-							<span>TypeScript</span>
-							<span>FastAPI</span>
-							<span>Supabase</span>
-							<span>Vite</span>
-						</div>
-					</section>
-				)}
+				<Routes>
+					<Route path="/" element={<RestaurantManager />} />
+					<Route path="/about" element={<AboutPage />} />
+					<Route path="/login" element={<LoginPage />} />
+					<Route path="/signup" element={<SignupPage />} />
+					<Route
+						path="/profile"
+						element={
+							<ProtectedRoute>
+								<ProfilePage />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="*"
+						element={<p className="rm-note">Page not found.</p>}
+					/>
+				</Routes>
 			</main>
 
 			<footer className="footer">
-				<p>&copy; {new Date().getFullYear()} Petuk MVP</p>
+				<p>&copy; {new Date().getFullYear()} Petuk</p>
 			</footer>
 		</div>
 	);
