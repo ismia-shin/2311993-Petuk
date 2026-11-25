@@ -18,6 +18,6 @@ class RestaurantUpdate(RestaurantCreate):
 
 class RestaurantRead(RestaurantCreate):
     model_config = ConfigDict(from_attributes=True)
-
     id: int
+    owner_id: int | None = None
 
