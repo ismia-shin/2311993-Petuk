@@ -1,5 +1,6 @@
 export interface Restaurant {
     id: number;
+    owner_id: number | null;
     name: string;
     area: string;
     cuisine: string;
@@ -7,4 +8,4 @@ export interface Restaurant {
     description: string | null;
 }
 
-export type RestaurantInput = Omit<Restaurant, "id">;
+export type RestaurantInput = Omit<Restaurant, "id" | "owner_id">;

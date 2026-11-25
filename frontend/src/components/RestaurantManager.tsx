@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { SyntheticEvent } from "react";
+import { useAuth } from "../hooks/useAuth";
 import {
 	createRestaurant,
 	deleteRestaurant,
@@ -8,6 +9,10 @@ import {
 	updateRestaurant,
 } from "../services/restaurantApi";
 import type { Restaurant } from "../types/restaurant";
+import {
+	canCreateRestaurant,
+	canManageRestaurant,
+} from "../utils/permissions";
 import "./RestaurantManager.css";
 
 const emptyForm = {
@@ -19,12 +24,15 @@ const emptyForm = {
 };
 
 export default function RestaurantManager() {
+	const { user, loading: authLoading } = useAuth();
 	const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 	const [form, setForm] = useState(emptyForm);
 	const [editingId, setEditingId] = useState<number | null>(null);
 	const [selected, setSelected] = useState<Restaurant | null>(null);
+
+	const canCreate = canCreateRestaurant(user);
 
 	function showError(err: unknown) {
 		setError(err instanceof Error ? err.message : "Something went wrong");
@@ -46,7 +54,7 @@ export default function RestaurantManager() {
 		loadRestaurants();
 	}, []);
 
-	// CREATE or UPDATE 
+	// CREATE or UPDATE (depends on whether we are editing)
 	async function handleSubmit(event: SyntheticEvent) {
 		event.preventDefault();
 		const data = {
@@ -71,6 +79,7 @@ export default function RestaurantManager() {
 		}
 	}
 
+	// Put the chosen restaurant into the form
 	function handleEdit(restaurant: Restaurant) {
 		setEditingId(restaurant.id);
 		setForm({
@@ -116,81 +125,91 @@ export default function RestaurantManager() {
 		<div className="rm">
 			<section className="rm-hero">
 				<h1>Discover &amp; manage dining spots</h1>
-				<p>Add, edit and organise your favourite places to eat.</p>
+				<p>Find great places to eat, and list your own restaurant.</p>
 			</section>
 
 			{error && <p className="rm-error">{error}</p>}
 
-			<form className="rm-card rm-form" onSubmit={handleSubmit}>
-				<h2>{editingId === null ? "Add a restaurant" : "Edit restaurant"}</h2>
-				<div className="rm-fields">
-					<label className="rm-field">
-						<span>Name</span>
-						<input
-							placeholder="e.g. Kacchi Bhai"
-							value={form.name}
-							maxLength={100}
-							onChange={(e) => setForm({ ...form, name: e.target.value })}
-							required
-						/>
-					</label>
-					<label className="rm-field">
-						<span>Area</span>
-						<input
-							placeholder="e.g. Mirpur"
-							value={form.area}
-							maxLength={100}
-							onChange={(e) => setForm({ ...form, area: e.target.value })}
-							required
-						/>
-					</label>
-					<label className="rm-field">
-						<span>Cuisine</span>
-						<input
-							placeholder="e.g. Bangladeshi"
-							value={form.cuisine}
-							maxLength={50}
-							onChange={(e) => setForm({ ...form, cuisine: e.target.value })}
-							required
-						/>
-					</label>
-					<label className="rm-field">
-						<span>Address (optional)</span>
-						<input
-							placeholder="e.g. Road 3, Mirpur 10"
-							value={form.address}
-							maxLength={255}
-							onChange={(e) => setForm({ ...form, address: e.target.value })}
-						/>
-					</label>
-					<label className="rm-field rm-field-wide">
-						<span>Description (optional)</span>
-						<textarea
-							placeholder="What makes this place special?"
-							rows={3}
-							value={form.description}
-							maxLength={500}
-							onChange={(e) =>
-								setForm({ ...form, description: e.target.value })
-							}
-						/>
-					</label>
-				</div>
-				<div className="rm-row">
-					<button type="submit" className="btn btn-primary">
-						{editingId === null ? "Add restaurant" : "Save changes"}
-					</button>
-					{editingId !== null && (
-						<button
-							type="button"
-							className="btn btn-ghost"
-							onClick={handleCancelEdit}
-						>
-							Cancel
+			{canCreate && (
+				<form className="rm-card rm-form" onSubmit={handleSubmit}>
+					<h2>{editingId === null ? "Add a restaurant" : "Edit restaurant"}</h2>
+					<div className="rm-fields">
+						<label className="rm-field">
+							<span>Name</span>
+							<input
+								placeholder="e.g. Kacchi Bhai"
+								value={form.name}
+								maxLength={100}
+								onChange={(e) => setForm({ ...form, name: e.target.value })}
+								required
+							/>
+						</label>
+						<label className="rm-field">
+							<span>Area</span>
+							<input
+								placeholder="e.g. Mirpur"
+								value={form.area}
+								maxLength={100}
+								onChange={(e) => setForm({ ...form, area: e.target.value })}
+								required
+							/>
+						</label>
+						<label className="rm-field">
+							<span>Cuisine</span>
+							<input
+								placeholder="e.g. Bangladeshi"
+								value={form.cuisine}
+								maxLength={50}
+								onChange={(e) => setForm({ ...form, cuisine: e.target.value })}
+								required
+							/>
+						</label>
+						<label className="rm-field">
+							<span>Address (optional)</span>
+							<input
+								placeholder="e.g. Road 3, Mirpur 10"
+								value={form.address}
+								maxLength={255}
+								onChange={(e) => setForm({ ...form, address: e.target.value })}
+							/>
+						</label>
+						<label className="rm-field rm-field-wide">
+							<span>Description (optional)</span>
+							<textarea
+								placeholder="What makes this place special?"
+								rows={3}
+								value={form.description}
+								maxLength={500}
+								onChange={(e) =>
+									setForm({ ...form, description: e.target.value })
+								}
+							/>
+						</label>
+					</div>
+					<div className="rm-row">
+						<button type="submit" className="btn btn-primary">
+							{editingId === null ? "Add restaurant" : "Save changes"}
 						</button>
-					)}
-				</div>
-			</form>
+						{editingId !== null && (
+							<button
+								type="button"
+								className="btn btn-ghost"
+								onClick={handleCancelEdit}
+							>
+								Cancel
+							</button>
+						)}
+					</div>
+				</form>
+			)}
+
+			{!authLoading && !canCreate && (
+				<p className="rm-note rm-note-gap">
+					{user
+						? "Only restaurant owners can add restaurants."
+						: "Want to list a restaurant? Log in or sign up as a restaurant owner."}
+				</p>
+			)}
 
 			{selected && (
 				<div className="rm-card rm-detail">
@@ -231,7 +250,7 @@ export default function RestaurantManager() {
 				<h2 className="rm-section-title">All restaurants</h2>
 				{loading && <p className="rm-note">Loading restaurants...</p>}
 				{!loading && restaurants.length === 0 && (
-					<p className="rm-note">No restaurants yet. Add the first one above.</p>
+					<p className="rm-note">No restaurants yet.</p>
 				)}
 				<div className="rm-grid">
 					{restaurants.map((r) => (
@@ -250,20 +269,24 @@ export default function RestaurantManager() {
 								>
 									View
 								</button>
-								<button
-									type="button"
-									className="btn btn-small btn-soft"
-									onClick={() => handleEdit(r)}
-								>
-									Edit
-								</button>
-								<button
-									type="button"
-									className="btn btn-small btn-danger"
-									onClick={() => handleDelete(r.id)}
-								>
-									Delete
-								</button>
+								{canManageRestaurant(user, r) && (
+									<>
+										<button
+											type="button"
+											className="btn btn-small btn-soft"
+											onClick={() => handleEdit(r)}
+										>
+											Edit
+										</button>
+										<button
+											type="button"
+											className="btn btn-small btn-danger"
+											onClick={() => handleDelete(r.id)}
+										>
+											Delete
+										</button>
+									</>
+								)}
 							</div>
 						</article>
 					))}
