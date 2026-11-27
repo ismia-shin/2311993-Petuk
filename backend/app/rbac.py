@@ -39,7 +39,15 @@ def can_manage(user: User, owner_id: int | None) -> bool:
         and owner_id is not None
         and owner_id == user.id
     )
-
+    
+def ensure_can_manage(user: User, owner_id: int | None) -> None:
+    """Raise 403 unless the user is an admin or owns the record."""
+    if not can_manage(user, owner_id):
+        raise HTTPException(
+            status_code=HTTPStatus.FORBIDDEN,
+            detail="You do not have permission to manage this restaurant",
+        )
+        
 def require_permission(permission: Permission):
     """Dependency: 401 if not logged in, 403 if the role lacks the permission."""
 

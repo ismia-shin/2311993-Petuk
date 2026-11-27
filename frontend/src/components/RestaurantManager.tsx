@@ -14,6 +14,7 @@ import {
 	canManageRestaurant,
 } from "../utils/permissions";
 import "./RestaurantManager.css";
+import MenuSection from "./MenuSection";
 
 const emptyForm = {
 	name: "",
@@ -243,6 +244,7 @@ export default function RestaurantManager() {
 							<strong>About:</strong> {selected.description}
 						</p>
 					)}
+					<MenuSection key={selected.id} restaurant={selected}/>
 				</div>
 			)}
 

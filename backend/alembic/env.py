@@ -8,6 +8,7 @@ from app.database import engine
 import app.restaurants.models 
 import app.users.models
 import app.auth.models
+import app.menu.models
 
 config = context.config
 
