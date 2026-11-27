@@ -2,7 +2,7 @@
 
 from sqlalchemy.pool import NullPool
 from sqlmodel import Session, create_engine
-from sqlalchemy.exc import event
+from sqlalchemy import event
 
 from app.config import settings
 
