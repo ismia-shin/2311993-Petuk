@@ -1,4 +1,4 @@
-"""Role-based access control: the one place that says who can do what."""
+"""Role-based access control"""
 
 from enum import Enum
 from http import HTTPStatus
@@ -10,9 +10,11 @@ class Permission(str, Enum):
     CREATE_RESTAURANT = "create_restaurant"
     MANAGE_OWN_RESTAURANT = "manage_own_restaurant"
     MANAGE_ANY_RESTAURANT = "manage_any_restaurant"
+    WRITE_REVIEW = "write_review"
+    DELETE_ANY_REVIEW = "delete_any_review"
 
 ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
-    Role.CUSTOMER: set(),
+    Role.CUSTOMER: {Permission.WRITE_REVIEW},
     Role.OWNER: {
         Permission.CREATE_RESTAURANT,
         Permission.MANAGE_OWN_RESTAURANT,
@@ -20,6 +22,7 @@ ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
     Role.ADMIN: {
         Permission.CREATE_RESTAURANT,
         Permission.MANAGE_ANY_RESTAURANT,
+        Permission.DELETE_ANY_REVIEW,
     },
 }
 
@@ -39,7 +42,7 @@ def can_manage(user: User, owner_id: int | None) -> bool:
         and owner_id is not None
         and owner_id == user.id
     )
-    
+
 def ensure_can_manage(user: User, owner_id: int | None) -> None:
     """Raise 403 unless the user is an admin or owns the record."""
     if not can_manage(user, owner_id):
@@ -47,7 +50,24 @@ def ensure_can_manage(user: User, owner_id: int | None) -> None:
             status_code=HTTPStatus.FORBIDDEN,
             detail="You do not have permission to manage this restaurant",
         )
-        
+
+def ensure_can_edit_review(user: User, author_id: int) -> None:
+    """Only the author edits a review, not even an admin."""
+    if user.id != author_id:
+        raise HTTPException(
+            status_code=HTTPStatus.FORBIDDEN,
+            detail="You can only edit your own review",
+        )
+
+def ensure_can_delete_review(user: User, author_id: int) -> None:
+    """The author can delete a review, and so can an admin."""
+    if user.id == author_id or has_permission(user, Permission.DELETE_ANY_REVIEW):
+        return
+    raise HTTPException(
+        status_code=HTTPStatus.FORBIDDEN,
+        detail="You can only delete your own review",
+    )
+
 def require_permission(permission: Permission):
     """Dependency: 401 if not logged in, 403 if the role lacks the permission."""
 
@@ -58,5 +78,4 @@ def require_permission(permission: Permission):
                 detail="You do not have permission to do this",
             )
         return current_user
-
     return checker
