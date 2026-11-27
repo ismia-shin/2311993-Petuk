@@ -25,7 +25,7 @@ def list_restaurants(session: Session = Depends(get_session)):
 @router.get("/{restaurant_id}", response_model=RestaurantRead)
 def get_restaurant(restaurant_id: int, session: Session = Depends(get_session)):
     """Read Single: public."""
-    return service.get_restaurant(session, restaurant_id)
+    return service.get_restaurant_read(session, restaurant_id)
 
 
 @router.post("", response_model=RestaurantRead, status_code=HTTPStatus.CREATED)
