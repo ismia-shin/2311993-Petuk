@@ -260,3 +260,7 @@
     line-height: 1.5;
     color: var(--muted);
 }
+
+.rm-item .rm-rating {
+	align-self: flex-start;
+}

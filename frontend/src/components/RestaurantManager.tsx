@@ -13,8 +13,10 @@ import {
 	canCreateRestaurant,
 	canManageRestaurant,
 } from "../utils/permissions";
-import "./RestaurantManager.css";
+import { formatRating } from "../utils/ratings";
 import MenuSection from "./MenuSection";
+import "./RestaurantManager.css";
+import ReviewSection from "./ReviewSection";
 
 const emptyForm = {
 	name: "",
@@ -39,7 +41,6 @@ export default function RestaurantManager() {
 		setError(err instanceof Error ? err.message : "Something went wrong");
 	}
 
-	// READ LIST
 	async function loadRestaurants() {
 		try {
 			setRestaurants(await getRestaurants());
@@ -50,12 +51,10 @@ export default function RestaurantManager() {
 		}
 	}
 
-	// Runs once when the page opens
 	useEffect(() => {
 		loadRestaurants();
 	}, []);
 
-	// CREATE or UPDATE (depends on whether we are editing)
 	async function handleSubmit(event: SyntheticEvent) {
 		event.preventDefault();
 		const data = {
@@ -80,7 +79,6 @@ export default function RestaurantManager() {
 		}
 	}
 
-	// Put the chosen restaurant into the form
 	function handleEdit(restaurant: Restaurant) {
 		setEditingId(restaurant.id);
 		setForm({
@@ -98,7 +96,6 @@ export default function RestaurantManager() {
 		setForm(emptyForm);
 	}
 
-	// READ SINGLE
 	async function handleView(id: number) {
 		try {
 			setError("");
@@ -108,7 +105,15 @@ export default function RestaurantManager() {
 		}
 	}
 
-	// DELETE
+	async function handleReviewsChanged(id: number) {
+		try {
+			setSelected(await getRestaurant(id));
+			await loadRestaurants();
+		} catch (err) {
+			showError(err);
+		}
+	}
+
 	async function handleDelete(id: number) {
 		if (!window.confirm("Delete this restaurant?")) return;
 		try {
@@ -244,7 +249,12 @@ export default function RestaurantManager() {
 							<strong>About:</strong> {selected.description}
 						</p>
 					)}
-					<MenuSection key={selected.id} restaurant={selected}/>
+					<MenuSection key={`menu-${selected.id}`} restaurant={selected} />
+					<ReviewSection
+						key={`reviews-${selected.id}`}
+						restaurant={selected}
+						onChanged={() => handleReviewsChanged(selected.id)}
+					/>
 				</div>
 			)}
 
@@ -262,6 +272,15 @@ export default function RestaurantManager() {
 								<span className="rm-area">&#128205; {r.area}</span>
 							</div>
 							<span className="rm-cuisine">{r.cuisine}</span>
+							{r.ratings.count > 0 ? (
+								<span className="rm-rating">
+									&#9733; {formatRating(r.ratings.overall)} &middot;{" "}
+									{r.ratings.count}{" "}
+									{r.ratings.count === 1 ? "review" : "reviews"}
+								</span>
+							) : (
+								<span className="rm-area">No reviews yet</span>
+							)}
 							{r.description && <p className="rm-desc">{r.description}</p>}
 							<div className="rm-row rm-item-actions">
 								<button

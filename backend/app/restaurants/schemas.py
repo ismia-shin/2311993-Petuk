@@ -1,6 +1,7 @@
 """Request and response schemas for restaurants."""
 
 from pydantic import BaseModel, ConfigDict, Field
+from app.reviews.schemas import RatingSummary
 
 class RestaurantCreate(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
@@ -18,6 +19,8 @@ class RestaurantUpdate(RestaurantCreate):
 
 class RestaurantRead(RestaurantCreate):
     model_config = ConfigDict(from_attributes=True)
+
     id: int
     owner_id: int | None = None
 
+    ratings: RatingSummary = Field(default_factory=RatingSummary)

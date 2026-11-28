@@ -1,3 +1,5 @@
+import type { RatingSummary } from "./review";
+
 export interface Restaurant {
     id: number;
     owner_id: number | null;
@@ -6,6 +8,7 @@ export interface Restaurant {
     cuisine: string;
     address: string | null;
     description: string | null;
+    ratings: RatingSummary;
 }
 
-export type RestaurantInput = Omit<Restaurant, "id" | "owner_id">;
+export type RestaurantInput = Omit<Restaurant, "id" | "owner_id" | "ratings">;

@@ -9,6 +9,7 @@ import app.restaurants.models
 import app.users.models
 import app.auth.models
 import app.menu.models
+import app.reviews.models
 
 config = context.config
 

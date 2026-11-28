@@ -4,6 +4,7 @@ from app.restaurants.router import router as restaurants_router
 from app.auth.router import router as auth_router
 from app.users.router import router as users_router
 from app.menu.router import router as menu_router
+from app.reviews.router import router as reviews_router
 
 app = FastAPI(
     title="FastAPI + React",
@@ -15,6 +16,7 @@ app.include_router(restaurants_router, prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(users_router, prefix="/api/v1")
 app.include_router(menu_router, prefix="/api/v1")
+app.include_router(reviews_router, prefix="/api/v1")
 
 @app.get("/api/health")
 def health() -> dict[str, str]:
