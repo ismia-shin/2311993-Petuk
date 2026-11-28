@@ -10,6 +10,7 @@ import app.users.models
 import app.auth.models
 import app.menu.models
 import app.reviews.models
+import app.audit.models
 
 config = context.config
 
